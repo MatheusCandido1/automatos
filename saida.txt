@@ -1,0 +1,5 @@
+aabaaa aceita
+abbab rejeita
+bbaba rejeita
+_ aceita
+baabab rejeita
