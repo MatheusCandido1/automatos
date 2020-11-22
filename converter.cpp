@@ -19,12 +19,14 @@ int quantidade_funcoes = 0;
 int num_estado_final = 0;
 vector<int> estado_inicial;
 
+vector<char> simbolos;
+
 void lerArquivo(vector<int> &origem, vector<char> &letra, vector<vector<int>> &num, vector<int> &estados_finais, char* afn){
     string formalismo;
     int num_estados;
     int num_simbolos;
 
-    vector<char> simbolos;
+
     vector<int> estados;
 
     int n1,n2;
@@ -32,7 +34,7 @@ void lerArquivo(vector<int> &origem, vector<char> &letra, vector<vector<int>> &n
     int n = 0;
     ifstream file;
     string temp;
-    file.open("afn.txt");
+    file.open(afn);
 
 
         // Lendo formalismo
@@ -94,12 +96,6 @@ void lerArquivo(vector<int> &origem, vector<char> &letra, vector<vector<int>> &n
     file.close();
 }
 
-void escreverArquivo() {
-    ofstream file;
-    file.open("teste1.txt");
-    file << "AFD" << endl;
-    file.close();
-}
 
 int existeRegra(vector<int> origem, vector<char> letra, vector<int> num, char palavra, int EA) {
     if(palavra == '\0') {
@@ -149,6 +145,13 @@ vector<int> concat(vector<int> v1, vector<int> v2) {
     return v1;
 }
 
+bool pertenceSimples(int value, vector<int> array) {
+    if(find(array.begin(), array.end(), value) != array.end()) {
+        return true;
+    }
+    return false;
+}
+
 bool pertence(vector<int> value, vector<vector<int>> array) {
     if(find(array.begin(), array.end(), value) != array.end()) {
         return true;
@@ -160,14 +163,10 @@ void imprimeFila(queue<vector<int>> temp) {
     while (!temp.empty()) {
 
     vector<int> p2(temp.front());
-    cout << "Elemento: ";
     for(int i =0; i < p2.size(); i++){
-    cout <<  p2[i] << ",";
     }
-    cout << endl;
     temp.pop();
     }
-    cout << endl;
 }
 
 int main(int argc, char *argv[])
@@ -177,6 +176,7 @@ int main(int argc, char *argv[])
     vector<char> letra;
     vector<vector<int>> num;
     vector<int> estados_finais;
+    vector<vector<int>> res_estados_finais;
 
     vector<string> palavras;
     lerArquivo(origem, letra, num, estados_finais, argv[1]);
@@ -199,74 +199,91 @@ int main(int argc, char *argv[])
         vector<int> tempIndice;
 
 
-        cout << "Estado atual: " << endl;
         for(int i = 0; i < estado_atual.size(); i++){
             tempIndice = findIndex(origem, estado_atual[i]);
             indice = concat(tempIndice, indice);
-            cout << estado_atual[i];
         }
 
         char letraTempo = 'a';
         vector<int> concatTempo;
-
+        for(int j = 0; j < estados_finais.size(); j++) {
+            if(pertenceSimples(estados_finais[j], estado_atual)) {
+                res_estados_finais.push_back(estado_atual);
+            }
+        }
         for(int i = 0; i < indice.size(); i++){
-            cout << "Fila: ";
             imprimeFila(etapas);
-            cout <<"Indice: " << indice[i] << endl;
-            if(i+1 <= indice.size() && letra[i] != letra[i+1]) {
+            if(i+1 <= indice.size() && letra[indice[i]] != letra[indice[i]+1]) {
 
-                cout << "Letra Atual: " << letra[i] << endl;
                 //recebe estado atual concatenado
                 resultante_origem.push_back(estado_atual);
-                resultante_letra.push_back(letra[i]);
-                for(int j = 0; j < num[i].size(); j++) {
-                    cout << "Resultado num: " << num[i][j] << endl;
+                resultante_letra.push_back(letra[indice[i]]);
+                for(int j = 0; j < num[indice[i]].size(); j++) {
                 }
-                vector<int> saida_numero = concat(concatTempo,num[i]);
+                vector<int> saida_numero = concat(concatTempo,num[indice[i]]);
                 resultante_numero.push_back(saida_numero);
         for(int x = 0; x < saida_numero.size(); x++) {
-            cout << "Saida Numero: " << saida_numero[x] << endl;
         }
 
-        cout << "Saida função pertence: " << pertence(saida_numero,usados) << endl;
                 if(!pertence(saida_numero,usados)) {
                     etapas.push(saida_numero);
                     usados.push_back(saida_numero);
                 }
             }
             else {
-                 cout << "entrou else";
-                concatTempo = concat(concatTempo,num[i]);
-                letraTempo = letra[i];
+                concatTempo = concat(concatTempo,num[indice[i]]);
+                letraTempo = letra[indice[i]];
             }
         }
     }
 
 
- /*    cout << "Origem  |  Letra  |  Saida" << endl;
-    for(int x = 0; x < resultante_origem.size(); x++) {
-        for(int z = 0; z < resultante_origem[x].size(); z++)
-            cout << resultante_origem[x][z];
-        cout << " | " << resultante_letra[x] << " | ";
-        for(int z = 0; z < resultante_numero[x].size(); z++)
-            cout << resultante_numero[x][z];
-        cout << endl;
-    }*/
-/*
-    cout << "-------------" << endl;
-    cout << "ORIGENS" << endl;
-    for(int x = 0; x < resultante_origem.size(); x++) {
-        for(int z = 0; z < resultante_origem[x].size(); z++)
-            cout << resultante_origem[x][z];
+
+    vector<vector<int>> new_estados = resultante_numero;
+    sort( new_estados.begin(), new_estados.end() );
+    new_estados.erase( unique( new_estados.begin(), new_estados.end() ), new_estados.end() );
+
+
+
+    ofstream file;
+    file.open(argv[2]);
+    file << "AFD" << endl;
+    file << new_estados.size() + 1 << " " << estado_inicial[0];
+    for(int j = 0; j < new_estados.size(); j++){
+        file << " ";
+    for(int i = 0; i < new_estados[j].size(); i++){
+       file << new_estados[j][i];
+    }
+    }
+    file << endl;
+    file << simbolos.size();
+    for(int i = 0; i < simbolos.size(); i++){
+
+        file << " " << simbolos[i];
+    }
+    file << endl;
+    file << res_estados_finais.size()-1;
+      for(int i = 0; i < res_estados_finais.size()-1; i++) {
+             file << " ";
+        for(int j = 0; j < res_estados_finais[i].size(); j++){
+          file << res_estados_finais[i][j];
+        }
+    }
+    file << endl;
+    for(int i = 0; i < resultante_origem.size(); i++){
+             for(int j = 0; j < resultante_origem[i].size(); j++){
+            file << resultante_origem[i][j];
+        }
+        file <<  " " << resultante_letra[i] << " ";
+        for(int j = 0; j < resultante_numero[i].size(); j++){
+            file << resultante_numero[i][j];
+        }
+        file << endl;
     }
 
-    cout << "-------------" << endl;
-    cout << "SAIDAS" << endl;
-    for(int x = 0; x < resultante_numero.size(); x++) {
-        for(int z = 0; z < resultante_numero[x].size(); z++)
-            cout << resultante_numero[x][z];
-    }
-//    escreverArquivo(); */
+
+    file.close();
+
 
 
     return 0;
