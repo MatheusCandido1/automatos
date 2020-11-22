@@ -5,6 +5,7 @@
 #include <string.h>
 #include <vector>
 #include <queue>
+#include <algorithm>
 
 using std::fstream;
 using std::ofstream;
@@ -37,7 +38,7 @@ void lerArquivo(vector<int> &origem, vector<char> &letra, vector<vector<int>> &n
         // Lendo formalismo
         getline(file, formalismo);
 
-        // Lendo número de estados
+        // Lendo numero de estados
 
         getline(file, temp);
         num_estados = (int)temp[0] - 48;
@@ -48,7 +49,7 @@ void lerArquivo(vector<int> &origem, vector<char> &letra, vector<vector<int>> &n
             estados.push_back((int)temp[i] - 48);
         }
 
-        // Lendo número de simbolos
+        // Lendo numero de simbolos
         getline(file, temp);
         num_simbolos = (int)temp[0] - 48;
 
@@ -61,7 +62,7 @@ void lerArquivo(vector<int> &origem, vector<char> &letra, vector<vector<int>> &n
         getline(file, temp);
         estado_inicial.push_back((int)temp[0] - 48);
 
-        // Lendo número de estados finais
+        // Lendo numero de estados finais
         getline(file, temp);
         num_estado_final = (int)temp[0] - 48;
 
@@ -139,6 +140,20 @@ bool existe(vector<vector<int>> usados, vector<int> valor)
     return false;
 }
 
+vector<int> concat(vector<int> v1, vector<int> v2) {
+    v1.insert(v1.end(), v2.begin(), v2.end());
+    sort( v1.begin(), v1.end() );
+    v1.erase( unique( v1.begin(), v1.end() ), v1.end() );
+    return v1;
+}
+
+bool pertence(vector<int> value, vector<vector<int>> array) {
+    if(find(array.begin(), array.end(), value) != array.end()) {
+        return true;
+    }
+    return false;
+}
+
 int main(int argc, char *argv[])
 {
     vector<int> origem;
@@ -150,48 +165,50 @@ int main(int argc, char *argv[])
     lerArquivo(origem, letra, num, estados_finais, argv[1]);
 
     queue <vector<int>> etapas;
-    etapas.push(estado_inicial);
-
     vector<vector<int>> usados;
-    vector<int> resultante_origem;
+    etapas.push(estado_inicial);
+    usados.push_back(estado_inicial);
+
+    vector<vector<int>> resultante_origem;
     vector<char> resultante_letra;
-    vector<string> resultante_numero;
+    vector<vector<int>> resultante_numero;
 
     while (!etapas.empty()) {
-        vector<int> estados_resultantes;
-        vector<int> indice;
         vector<int> estado_atual = etapas.front();
         etapas.pop();
-
+        vector<int> indice;
 
 
         for(int i = 0; i < estado_atual.size(); i++){
             indice = findIndex(origem, estado_atual[i]);
-
         }
 
-        for(int j = 0; j < indice.size(); j++){
+        char letraTempo = 'a';
+        vector<int> concatTempo;
 
-                cout << num[indice[j]][0];
-            if(!existe(usados, num[indice[j]])){
-
-                etapas.push(num[j]);
-                resultante_letra[j] = letra[j];
-                resultante_origem[j] = estado_atual[j];
-                for(int s = 0; s < num[j].size(); s++) {
-                        resultante_numero[j] = std::to_string(num[j][s]);
+        for(int i = 0; i < indice.size(); i++){
+            if(letraTempo == letra[i]) {
+                //recebe estado atual concatenado
+                resultante_origem.push_back(estado_atual);
+                resultante_letra.push_back(letra[i]);
+                vector<int> saida_numero = concat(concatTempo,num[i]);
+                resultante_numero.push_back(saida_numero);
+                if(!pertence(saida_numero,usados)) {
+                    etapas.push(saida_numero);
+                    usados.push_back(saida_numero);
                 }
             }
-
+            else {
+                concatTempo = concat(concatTempo,num[i]);
+                letraTempo = letra[i];
+            }
         }
-
-        usados.push_back(estado_atual);
     }
 
 
-    for(int x = 0; x < resultante_letra.size(); x++) {
-        cout << "Origem: " << resultante_origem[x] << " - " << "Letra: " << resultante_letra[x] << " - " << "Destino: " << resultante_numero[x] << endl;
-    }
+    // for(int x = 0; x < resultante_letra.size(); x++) {
+    //     cout << "Origem: " << resultante_origem[x] << " - " << "Letra: " << resultante_letra[x] << " - " << "Destino: " << resultante_numero[x] << endl;
+    // }
 
 //    escreverArquivo();
 
