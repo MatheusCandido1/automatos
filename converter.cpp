@@ -247,7 +247,7 @@ int main(int argc, char *argv[])
 
     ofstream file;
     file.open(argv[2]);
-    file << "AFD # (Linha 1) Representação do formalismo" << endl;
+    file << "AFD" << endl;
     file << new_estados.size() + 1 << " " << estado_inicial[0];
     for(int j = 0; j < new_estados.size(); j++){
         file << " ";
@@ -255,13 +255,13 @@ int main(int argc, char *argv[])
        file << new_estados[j][i];
     }
     }
-     file << " # (Linha 2) 4 estados: 0, 1, 2 e 3";
     file << endl;
     file << simbolos.size();
     for(int i = 0; i < simbolos.size(); i++){
 
         file << " " << simbolos[i];
     }
+
     file << endl;
     file << res_estados_finais.size()-1;
       for(int i = 0; i < res_estados_finais.size()-1; i++) {
