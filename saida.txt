@@ -1,5 +1,5 @@
-AFD
-5 0 12 2 23 3
+AFD # (Linha 1) Representação do formalismo
+5 0 12 # (Linha 2) 4 estados: 0, 1, 2 e 3 2 # (Linha 2) 4 estados: 0, 1, 2 e 3 23 # (Linha 2) 4 estados: 0, 1, 2 e 3 3 # (Linha 2) 4 estados: 0, 1, 2 e 3
 2 a b
 4 12 2 3 23
 0 a 12
