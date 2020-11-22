@@ -16,7 +16,7 @@ using namespace std;
 
 int quantidade_funcoes = 0;
 int num_estado_final = 0;
-vector<int> estado_inicial = 0;
+vector<int> estado_inicial;
 
 void lerArquivo(vector<int> &origem, vector<char> &letra, vector<vector<int>> &num, vector<int> &estados_finais, char* afn){
     string formalismo;
@@ -71,7 +71,7 @@ void lerArquivo(vector<int> &origem, vector<char> &letra, vector<vector<int>> &n
             estados_finais.push_back((int)temp[i] - 48);
         }
 
-        while(file.eof()){
+        while(!file.eof()){
         // Preenchendo Origem
         getline(file, temp);
         origem.push_back((int)temp[0] - 48);
@@ -119,10 +119,28 @@ bool verificarEstados(int estado_atual, vector<int> estados_finais) {
     return false;
 }
 
+vector<int> findIndex(vector<int> origem, int valorBusca) {
+    vector<int> resultante;
+    for(int i = 0; i < origem.size(); i++){
+        if(origem[i] == valorBusca){
+            resultante.push_back(i);
+        }
+    }
+    return resultante;
+}
+
+bool existe(vector<vector<int>> usados, vector<int> valor)
+{
+    for(int i = 0; i < usados.size(); i++){
+        if(usados[i] == valor){
+            return true;
+        }
+    }
+    return false;
+}
+
 int main(int argc, char *argv[])
 {
-
-
     vector<int> origem;
     vector<char> letra;
     vector<vector<int>> num;
@@ -134,38 +152,49 @@ int main(int argc, char *argv[])
     queue <vector<int>> etapas;
     etapas.push(estado_inicial);
 
+    vector<vector<int>> usados;
+    vector<int> resultante_origem;
+    vector<char> resultante_letra;
+    vector<string> resultante_numero;
+
     while (!etapas.empty()) {
         vector<int> estados_resultantes;
-        int indice  = 0;
-        vector<int> estado_atual;
+        vector<int> indice;
+        vector<int> estado_atual = etapas.front();
+        etapas.pop();
+
+
+
+        for(int i = 0; i < estado_atual.size(); i++){
+            indice = findIndex(origem, estado_atual[i]);
+
+        }
+
+        for(int j = 0; j < indice.size(); j++){
+
+                cout << num[indice[j]][0];
+            if(!existe(usados, num[indice[j]])){
+
+                etapas.push(num[j]);
+                resultante_letra[j] = letra[j];
+                resultante_origem[j] = estado_atual[j];
+                for(int s = 0; s < num[j].size(); s++) {
+                        resultante_numero[j] = std::to_string(num[j][s]);
+                }
+            }
+
+        }
+
+        usados.push_back(estado_atual);
     }
 
-//    lerPalavra(palavras, argv[2]);
+
+    for(int x = 0; x < resultante_letra.size(); x++) {
+        cout << "Origem: " << resultante_origem[x] << " - " << "Letra: " << resultante_letra[x] << " - " << "Destino: " << resultante_numero[x] << endl;
+    }
+
+//    escreverArquivo();
 
 
-    escreverArquivo();
-
-    /*for(int j = 0; j < palavras.size(); j++) {
-        file << palavras[j];
-        int EA = estado_inicial;
-        for(int i = 0; i < palavras[j].size(); i++) {
-
-            if(palavras[j][i] == '_')
-            {
-                break;
-            }
-            EA = existeRegra(origem, letra,num, palavras[j][i], EA);
-            if(EA == -1) {
-                break;
-            }
-        }
-
-        if(verificarEstados(EA, estados_finais)) {
-           file << " aceita" << endl;
-        } else {
-           file << " rejeita" << endl;
-        }
-
-    }*/
     return 0;
 }
