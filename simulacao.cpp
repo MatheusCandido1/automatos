@@ -25,64 +25,59 @@ void lerArquivo(vector<int> &origem, vector<char> &letra, vector<int> &num, vect
     vector<char> simbolos;
     vector<int> estados;
 
+    ifstream file;
+    string temp;
+    file.open(afd);
+
     int n1,n2;
     char c1;
     int n = 0;
-    FILE *file = fopen(afd,"r");
-
         // Lendo formalismo
-        fscanf(file, " %s", formalismo);
+        getline(file, formalismo);
 
         // Lendo número de estados*/
 
-        fscanf(file, "%d", &num_estados);
+        getline(file, temp);
+        num_estados = (int)temp[0] - 48;
 
         // Lendo todos os estados
-        for(int i = 0; i < num_estados; i++){
-            int aux;
-            fscanf(file, "%d", &aux);
-            estados.push_back(aux);
+        for(int i = 2; i <= num_estados * 2; i = i+2){
+            estados.push_back((int)temp[i] - 48);
         }
 
         // Lendo número de simbolos
-        fscanf(file, "%d", &num_simbolos);
+        getline(file, temp);
+        num_simbolos = (int)temp[0] - 48;
 
         // Lendo todos os simbolos
-        for(int i = 0; i < num_simbolos; i++){
-            char aux;
-            fscanf(file, " %c", &aux);
-            simbolos.push_back(aux);
+         for(int i = 2; i <= num_simbolos * 2; i = i+2){
+            simbolos.push_back(temp[i]);
         }
 
         // Lendo Estado Inicial
-        fscanf(file, "%d", &estado_inicial);
+        getline(file, temp);
+        estado_inicial = (int)temp[0] - 48;
 
         // Lendo número de estados finais
-        fscanf(file, "%d", &num_estado_final);
-
+        getline(file, temp);
+        num_estado_final = (int)temp[0] - 48;
         // Lendo todos os estados finais
-        for(int i = 0; i < num_estado_final; i++){
-            int aux;
-            fscanf(file, "%d", &aux);
-            estados_finais.push_back(aux);
+        for(int i = 2; i <= num_estado_final * 2; i = i+2){
+            estados_finais.push_back((int)temp[i] - 48);
         }
-
-        while(!feof(file)){
+        while(!file.eof()){
         // Preenchendo Origem
-        fscanf(file, "%d",&n1);
+        getline(file, temp);
+        origem.push_back((int)temp[0] - 48);
 
         // Preenchendo Letras
-        fscanf(file, " %c",&c1);
+        letra.push_back(temp[2]);
 
-        // Preenchendo Num
-        fscanf(file, "%d",&n2);
 
-        // Montando Arrays de Regras
-        origem.push_back(n1);
-        letra.push_back(c1);
-        num.push_back(n2);
+        num.push_back(temp[4]);
         quantidade_funcoes++;
     }
+    file.close();
 }
 
 void lerPalavra(vector<string> &palavras, char* entrada){
