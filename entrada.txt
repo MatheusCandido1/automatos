@@ -1,5 +1,5 @@
-aabaaa
-abbab
-bbaba
+aba
+bbb
 _
-baabab
+ababa
+aaaa

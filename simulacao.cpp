@@ -32,7 +32,7 @@ void lerArquivo(vector<int> &origem, vector<char> &letra, vector<int> &num, vect
     int n1,n2;
     char c1;
     int n = 0;
-        // Lendo formalismo
+
         getline(file, formalismo);
 
         // Lendo número de estados*/
@@ -44,6 +44,7 @@ void lerArquivo(vector<int> &origem, vector<char> &letra, vector<int> &num, vect
         for(int i = 2; i <= num_estados * 2; i = i+2){
             estados.push_back((int)temp[i] - 48);
         }
+
 
         // Lendo número de simbolos
         getline(file, temp);
@@ -74,8 +75,11 @@ void lerArquivo(vector<int> &origem, vector<char> &letra, vector<int> &num, vect
         letra.push_back(temp[2]);
 
 
-        num.push_back(temp[4]);
+        num.push_back((int)temp[4] - 48);
         quantidade_funcoes++;
+    }
+    for(int i = 0; i < num.size(); i++){
+        cout << num[i];
     }
     file.close();
 }
